@@ -1,0 +1,34 @@
+﻿@page "/"
+
+@using Syncfusion.Blazor.Data
+@using Syncfusion.Blazor.Grids
+@using DemoFail.Shared;
+
+<h3>OrgUnits</h3>
+
+
+<SfGrid TValue="OrgUnit" Query="defaultQuery" AllowPaging="true" AllowFiltering=true AllowGrouping=true Toolbar="@ToolbarItems">
+    <GridPageSettings PageSize="50" />
+    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true" Mode="Syncfusion.Blazor.Grids.EditMode.Normal" />
+    <SfDataManager Url="odata/OrgUnits" Adaptor="Adaptors.ODataV4Adaptor" Key="Id" />
+    <GridEvents TValue="OrgUnit" OnActionFailure="@ActionFailure"></GridEvents>
+    <GridColumns>
+        <GridColumn Field="@nameof(ou.Id)" Width=120 IsPrimaryKey="true" />
+        <GridColumn Field="@nameof(ou.ParentId)" Width=100 />
+        <GridColumn Field="@nameof(ou.Summary)" Width=100 />
+      
+    </GridColumns>
+</SfGrid>
+<span class="error">@ErrorDetails</span>
+@code {
+    public DemoFail.Shared.OrgUnit ou;
+    public string ErrorDetails = "";
+    public string[] ToolbarItems = new string[] { "Add", "Edit", "Delete", "Cancel", "Update"};
+    private Query defaultQuery = new Query().Expand(new List<string> { "Manager", "Location" });
+
+    public void ActionFailure(FailureEventArgs args)
+    {
+        this.ErrorDetails = args.Error.Message;
+        StateHasChanged();
+    }
+}
